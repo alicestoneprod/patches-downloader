@@ -15,9 +15,7 @@ const downloadFile = (outputPath, fileName, link, retries = 3) => {
       if (response.statusCode !== 200) {
         file.close()
         fs.unlink(outputPath + fileName, () => {}) // Delete the file async
-        return reject(
-          new Error(`Failed to get '${link}' (${response.statusCode})`)
-        )
+        return reject(`Failed to get '${link}' (${response.statusCode})`)
       }
 
       const totalSize = parseInt(response.headers["content-length"], 10)
@@ -26,8 +24,7 @@ const downloadFile = (outputPath, fileName, link, retries = 3) => {
       console.log(`\nDownloading file: ${fileName}...`)
 
       const bar = new cliProgress.SingleBar({
-        format:
-          "{bar} {percentage}% | {value}/{total} MB | Speed: {speed} KB/s",
+        format: "{bar} {percentage}% | {value}/{total} MB | Speed: {speed} KB/s",
         barCompleteChar: "\u2588",
         barIncompleteChar: "\u2591",
         hideCursor: true,
@@ -40,11 +37,7 @@ const downloadFile = (outputPath, fileName, link, retries = 3) => {
       response.on("data", (chunk) => {
         file.write(chunk)
         downloadedSize += chunk.length
-        const speed = (
-          downloadedSize /
-          ((Date.now() - startTime) / 1000) /
-          1024
-        ).toFixed(2)
+        const speed = (downloadedSize / ((Date.now() - startTime) / 1000) / 1024).toFixed(2)
         bar.update(sizeFormatter(downloadedSize), {
           speed,
           value: (downloadedSize / 1024 / 1024).toFixed(2),
@@ -61,15 +54,13 @@ const downloadFile = (outputPath, fileName, link, retries = 3) => {
       response.on("error", (err) => {
         fs.unlink(outputPath + fileName, () => {
           if (retries > 0) {
-            console.log(
-              `Retrying download: ${fileName}... (${retries} retries left)`
-            )
+            console.log(`Retrying download: ${fileName}... (${retries} retries left)`)
             resolve(downloadFile(outputPath, fileName, link, retries - 1))
           } else {
             fs.appendFile(
               "logs.txt",
               `Error while reading config file: ${fileName} - ${err}\n
-              `
+              `,
             )
             resolve()
           }
@@ -81,15 +72,13 @@ const downloadFile = (outputPath, fileName, link, retries = 3) => {
       file.close()
       fs.unlink(outputPath + fileName, () => {
         if (retries > 0) {
-          console.log(
-            `Retrying download: ${fileName}... (${retries} retries left)`
-          )
+          console.log(`Retrying download: ${fileName}... (${retries} retries left)`)
           resolve(downloadFile(outputPath, fileName, link, retries - 1))
         } else {
           fs.appendFile(
             "logs.txt",
             `Error while reading config file: ${fileName} - ${err}
-            `
+            `,
           )
           resolve()
         }
@@ -97,6 +86,8 @@ const downloadFile = (outputPath, fileName, link, retries = 3) => {
     })
 
     const startTime = Date.now()
+  }).catch((msg) => {
+    console.log(msg + " , skipping...")
   })
 }
 
@@ -153,12 +144,7 @@ fs.readFile("config.json", "utf-8", async (err, data) => {
       fs.mkdirSync(config.outputPath, { recursive: true })
     }
 
-    await downloadFromTo(
-      config.from,
-      config.to,
-      config.outputPath,
-      config.baseUrl
-    )
+    await downloadFromTo(config.from, config.to, config.outputPath, config.baseUrl)
   } catch (error) {
     console.error("Error during file download:", error)
   }
