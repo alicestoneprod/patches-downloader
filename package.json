@@ -1,0 +1,14 @@
+{
+  "name": "PatchDownloader",
+  "version": "1.0.0",
+  "main": "index.mjs",
+  "author": "Alice Morozova",
+  "scripts": {
+    "dev": "node index.mjs"
+  },
+  "description": "Simple node.js patch downloader for Dragon Nest",
+  "license": "MIT",
+  "dependencies": {
+    "cli-progress": "^3.12.0"
+  }
+}

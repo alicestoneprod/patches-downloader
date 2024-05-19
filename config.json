@@ -1,0 +1,6 @@
+{
+  "baseUrl": "http://lzg.jijiagames.com/dn/ReleaseBuild/Patch/",
+  "from": 300,
+  "to": 526,
+  "outputPath": "output/"
+}
