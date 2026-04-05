@@ -107,6 +107,11 @@ const generatePakPath = (value) => {
   return `${path}/Patch${path}.pak`
 }
 
+const generateTxtPath = (value) => {
+  const path = "00000000".slice(value.toString().length) + value
+  return `${path}/Patch${path}.txt`
+}
+
 const generateOutputPath = (outputPath) => {
   const newDate = new Date()
   const time = newDate.toLocaleTimeString().replaceAll(":", ".")
@@ -125,13 +130,16 @@ const downloadFromTo = async (from, to, output, baseUrl) => {
       return
     }
     const generatedPakPath = generatePakPath(current)
-    const fileName = generatedPakPath.split("/")[1]
+    const generatedTxtPath = generateTxtPath(current)
+    const pakFileName = generatedPakPath.split("/")[1]
+    const txtFileName = generatedTxtPath.split("/")[1]
 
     try {
-      await downloadFile(outputPath, fileName, baseUrl + "/" + generatedPakPath)
+      await downloadFile(outputPath, pakFileName, baseUrl + "/" + generatedPakPath)
+      await downloadFile(outputPath, txtFileName, baseUrl + "/" + generatedTxtPath)
       await downloadSequentially(current + 1)
     } catch (error) {
-      console.error("Error downloading file:", fileName, error)
+      console.error("Error downloading file:", pakFileName, error)
     }
   }
 
